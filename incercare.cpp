@@ -7,40 +7,22 @@ class Phone{
 	int customers;
 	std::string color;
 
-   
-
     public:
 	Phone (int cust, std::string col) 
     : customers(cust),
     color(col)
     {}
     
-    Phone(const Phone &p){
+    private: Phone(const Phone &p){
         std::cout<<"COPY CONSTRUCT!"<<std::endl;
         this->customers=p.customers;
         this->color=p.color;
     }
 
-    Phone& operator+=(const Phone& p){
-        std::cout<<"OPERATOR +=!"<<std::endl;
+    private: Phone& operator=(const Phone& p){
+        std::cout<<"Copy assignment operator!"<<std::endl;
         this->customers=p.customers;
         this->color=p.color;
-        return *this;
-    }
-
-    
-    Phone& operator=(const Phone &p){
-        if(this == &p){
-             std::cout<<"Identity test! Self assignment!"<<std::endl;
-             return *this;
-         }
-        else{
-            std::cout<<"SWAP!"<<std::endl;
-        }
-        
-        this->customers=p.customers;
-        this->color=p.color;
-        return *this;
     }
 
 	public: 
@@ -85,7 +67,7 @@ class Iphone : private Phone{
 
 
 
-    Iphone(const Iphone &ip):Phone(customers,color){
+    private: Iphone(const Iphone &ip):Phone(customers,color){
         std::cout<<"COPY CONSTRUCT!"<<std::endl;
         this->customers=ip.customers;
         this->color=ip.color;
@@ -94,9 +76,9 @@ class Iphone : private Phone{
 
      Iphone& operator=(const Iphone& ip){
         std::cout<<"COPY ASSIGNMENT OPERATOR!"<<std::endl;
-        Phone::operator=(ip);
-        price=ip.price;
-        return *this;
+        this->customers=ip.customers;
+        this->color=ip.color;
+        this->price=ip.price;
     }
 
 
@@ -129,7 +111,7 @@ class Iphone : private Phone{
 int main(){
 
 	
-     /*Iphone *iphone1=new Iphone(10,"verde",10000);
+    Iphone *iphone1=new Iphone(10,"verde",10000);
 
     iphone1->printPrice();
 
@@ -144,9 +126,9 @@ int main(){
 	iphone2->setColor("verde");
 
 	iphone2->printColor();
-    */
+    
 
-    Phone p1 (100,"rosu");
+    /*Phone p1 (100,"rosu");
     Phone p2 (20,"alb");
     Phone p3 (10,"negru");
     p2.printColor();
@@ -162,5 +144,5 @@ int main(){
     Iphone iphone2(20,"roz",170);
     std::cout<<iphone1.printColor()<<std::endl;
     iphone1=iphone2;
-    std::cout<<iphone1.printColor()<<std::endl;//Item12
+    std::cout<<iphone1.printColor()<<std::endl;//Item12*/
 }
