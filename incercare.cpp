@@ -1,5 +1,33 @@
 #include <iostream>
+#include <mutex>
+#include <memory>
+#include <thread>
 using namespace std;
+
+class Lock{
+    std::mutex m;
+    int ct=0;
+
+    explicit Lock(){
+        m.lock();
+        std::cout<<"Constructor is called!"<<std::endl;
+    }
+    ~Lock(){
+        m.unlock();
+        std::cout<<"Destructor is called!"<<std::endl;
+    }
+
+    void takePictures(){
+        Lock lock;
+        ct++;
+        std::cout<<"Customer number "<<ct<<" is taking pictures!"<<std::endl;
+
+    }
+    void finishing(){
+        Lock lock;
+        std::cout<<"Next customer is taking pictures!"<<std::endl;
+    }
+};
 
 class Phone{
 
@@ -25,9 +53,10 @@ class Phone{
         this->color=p.color;
     }
 
+
 	public: 
     std::string printColor(){
-	    std::cout<<"color="<<color<<std::endl;
+	    //std::cout<<"color="<<color<<std::endl;
 	    return this->color;
 	}
 
@@ -107,42 +136,39 @@ class Iphone : private Phone{
 };
 
 
+    Phone* createPhone(int customers,std::string color){
+        return (new Phone(customers,color));
+    }
+
+    std::mutex m;
+
+    void takePictures(){
+        m.lock();
+        std::cout << "Phone bun!!" << "\n";
+        m.unlock();
+    }
 
 int main(){
 
-	
-    Iphone *iphone1=new Iphone(10,"verde",10000);
-
-    iphone1->printPrice();
-
-	std::cout<<"***********"<<std::endl;
-
-	Iphone *iphone2=new Iphone(20,"rosu",1001);
-
-	iphone2->printColor();
-
-    std::cout<<"***********"<<std::endl;
-
-	iphone2->setColor("verde");
-
-	iphone2->printColor();
+    //Item 13
+    std::unique_ptr<Phone> pPhone(createPhone(100,"rosu"));
+    std::cout<<pPhone->printColor()<<std::endl;
+    //std::unique_ptr<Phone> pPhone1(pPhone); 
+    std::unique_ptr<Phone> pPhone1 = move(pPhone);
+    std::cout<<pPhone1->printColor()<<std::endl;
     
+    std::shared_ptr<Phone> pPhone2(createPhone(10,"verde"));
+    std::cout<<pPhone2->printColor()<<std::endl;
+    std::shared_ptr<Phone> pPhone3(pPhone2);
+    std::cout<<pPhone2->printColor()<<std::endl;
+    std::cout<<pPhone3->printColor()<<std::endl;
+    pPhone2=pPhone3;
+    std::cout<<pPhone2->printColor()<<std::endl;
+    std::cout<<pPhone3->printColor()<<std::endl;
 
-    /*Phone p1 (100,"rosu");
-    Phone p2 (20,"alb");
-    Phone p3 (10,"negru");
-    p2.printColor();
-    p2+=p1;
-    p2.printColor(); //Item10
-    std::cout<<"***********"<<std::endl;
-
-    p3 = p1;
-    p3=p3;//Item11
-    std::cout<<"***********"<<std::endl;
-
-    Iphone iphone1(10,"mov",100);
-    Iphone iphone2(20,"roz",170);
-    std::cout<<iphone1.printColor()<<std::endl;
-    iphone1=iphone2;
-    std::cout<<iphone1.printColor()<<std::endl;//Item12*/
+    //Item 14
+    std::thread picture1(takePictures);
+    std::thread picture2(takePictures);
+    picture1.join();
+    picture2.join();
 }
